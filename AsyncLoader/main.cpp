@@ -1,4 +1,4 @@
-#include "AsyncLoadRequestManager.h"
+ï»¿#include "AsyncLoadRequestManager.h"
 
 #include <chrono>
 #include <thread>
@@ -7,43 +7,43 @@ int main() {
 	AsyncLoadRequestManager loader;
 
 	
-	{//ƒƒCƒ“ƒ‹[ƒv
+	{//ãƒ¡ã‚¤ãƒ³ãƒ«ãƒ¼ãƒ—
 		
-		//FXXVˆ—’†ƒ[ƒhƒŠƒNƒGƒXƒg‚ğÏ‚Ş
+		//è‰²ã€…æ›´æ–°å‡¦ç†ä¸­ãƒ­ãƒ¼ãƒ‰ãƒªã‚¯ã‚¨ã‚¹ãƒˆã‚’ç©ã‚€
 		for(int i = 0 ; i < 100 ; i++){
 
-			//“Ç‚İ‚Şƒtƒ@ƒCƒ‹
+			//èª­ã¿è¾¼ã‚€ãƒ•ã‚¡ã‚¤ãƒ«
 			struct _stat buf;
 			int fd=0;
 			_stat("test.jpg", &buf);
-			void* buff = nullptr;	//ƒAƒƒP[ƒ^‚©‚çƒAƒƒP[ƒg‚µ‚Ä‚«‚½ƒoƒbƒtƒ@
+			void* buff = nullptr;	//ã‚¢ãƒ­ã‚±ãƒ¼ã‚¿ã‹ã‚‰ã‚¢ãƒ­ã‚±ãƒ¼ãƒˆã—ã¦ããŸãƒãƒƒãƒ•ã‚¡
 
 			loader.PushRequest(RequestInfo(buff, "test.jpg", buf.st_size));
 		}
 		
-		//”ñ“¯Šúƒ[ƒhƒXƒ^[ƒg
+		//éåŒæœŸãƒ­ãƒ¼ãƒ‰ã‚¹ã‚¿ãƒ¼ãƒˆ
 		auto loadstart = std::chrono::system_clock::now();
 		if (loader.IsRequested()) {
 			loader.ThreadStart();
 		}
 
-		//FXXVˆ—’†”ñ“¯Šúƒ[ƒh‘Ò‚¿.NowLoading•`‰æÏ‚İ‚Æ‚©B‘Ò‹@‚Æ‚©B
+		//è‰²ã€…æ›´æ–°å‡¦ç†ä¸­éåŒæœŸãƒ­ãƒ¼ãƒ‰å¾…ã¡.NowLoadingæç”»ç©ã¿ã¨ã‹ã€‚å¾…æ©Ÿã¨ã‹ã€‚
 		while (loader.IsLoading()) {
 			//printf("Waiting...\n");
 
-			//ƒ†[ƒU[“ü—Í‚É‚æ‚éƒLƒƒƒ“ƒZƒ‹ˆ—
+			//ãƒ¦ãƒ¼ã‚¶ãƒ¼å…¥åŠ›ã«ã‚ˆã‚‹ã‚­ãƒ£ãƒ³ã‚»ãƒ«å‡¦ç†
 			{
 			}
 		}
 		auto loadend = std::chrono::system_clock::now();
 		auto elaps = std::chrono::duration_cast<std::chrono::microseconds>(loadend - loadstart);
 		printf("load elaps %lld ms", elaps.count());
-		//ƒƒCƒ“ˆ—
+		//ãƒ¡ã‚¤ãƒ³å‡¦ç†
 
-		//•`‰æˆ—
+		//æç”»å‡¦ç†
 	}
 
-	//ƒƒCƒ“ƒ‹[ƒvI—¹
+	//ãƒ¡ã‚¤ãƒ³ãƒ«ãƒ¼ãƒ—çµ‚äº†
 	loader.Finish();
 	return 0;
 }

@@ -1,4 +1,4 @@
-#include "AsyncLoadRequestManager.h"
+ï»¿#include "AsyncLoadRequestManager.h"
 #include <thread>
 #include <assert.h>
 std::atomic<AsyncLoadRequestManager::STATE> AsyncLoadRequestManager::state_;
@@ -12,12 +12,12 @@ static void LoadFunc(std::queue<RequestInfo>* request, int id) {
 	while (!request->empty()) {
 		RequestInfo info = request->front();
 
-		//ƒtƒ@ƒCƒ‹“Ç‚İ‚İˆ—
+		//ãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿å‡¦ç†
 		FILE* fp;
 		errno_t err = fopen_s(&fp, info.fileName_, "rb");
 		assert(err == 0);
 		{
-			//freadˆ—
+			//freadå‡¦ç†
 			void* p = new char[info.fileSize_];
 			info.buffer_ = p;
 			size_t ret = fread_s(info.buffer_, info.fileSize_, info.fileSize_, 1, fp);
@@ -64,8 +64,8 @@ void AsyncLoadRequestManager::ThreadFunc(std::queue<RequestInfo>* requests) {
 			break;
 		case STATE::LOADING:
 		{
-			//ƒŠƒNƒGƒXƒg‚ğŠeCPUƒRƒA‚É•ªŠ„‚µ‚Äƒ[ƒhƒXƒŒƒbƒhì¬
-			//ƒXƒŒƒbƒh‚²‚Æ‚Ìƒ[ƒhƒŠƒNƒGƒXƒg”
+			//ãƒªã‚¯ã‚¨ã‚¹ãƒˆã‚’å„CPUã‚³ã‚¢ã«åˆ†å‰²ã—ã¦ãƒ­ãƒ¼ãƒ‰ã‚¹ãƒ¬ãƒƒãƒ‰ä½œæˆ
+			//ã‚¹ãƒ¬ãƒƒãƒ‰ã”ã¨ã®ãƒ­ãƒ¼ãƒ‰ãƒªã‚¯ã‚¨ã‚¹ãƒˆæ•°
 			int loadRequestPerThread = requests->size() / cpu_num;
 			int mod = requests->size() % cpu_num;
 			for (uint32_t i = 0; i < cpu_num; i++) {
@@ -76,34 +76,34 @@ void AsyncLoadRequestManager::ThreadFunc(std::queue<RequestInfo>* requests) {
 				}
 			}
 			{
-				//—]‚è•ª‚ğƒLƒ…[‚É’Ç‰Á
+				//ä½™ã‚Šåˆ†ã‚’ã‚­ãƒ¥ãƒ¼ã«è¿½åŠ 
 				int targetQueue = 0;
 				for (int i = 0; i < mod; i++) {
 					auto r = requests->front();
 					requestQueue[targetQueue].push(r);
 					targetQueue++;
-					if (targetQueue >= 8) {
+					if (targetQueue >= cpu_num) {
 						targetQueue = 0;
 					}
 					requests->pop();
 				}
 			}
 			
-			//ì¬‚µ‚½ƒŠƒNƒGƒXƒg‚Åƒ[ƒhƒXƒŒƒbƒhì¬
+			//ä½œæˆã—ãŸãƒªã‚¯ã‚¨ã‚¹ãƒˆã§ãƒ­ãƒ¼ãƒ‰ã‚¹ãƒ¬ãƒƒãƒ‰ä½œæˆ
 			for (uint32_t i = 0; i < cpu_num; i++) {
 				loadThreads[i] = std::thread(LoadFunc, &requestQueue[i], i);
 			}
-			//ƒXƒe[ƒg‚ğƒWƒ‡ƒCƒ“‚ÖˆÚs
+			//ã‚¹ãƒ†ãƒ¼ãƒˆã‚’ã‚¸ãƒ§ã‚¤ãƒ³ã¸ç§»è¡Œ
 			state_ = STATE::JOIN;
 		}
 			break;
 		
 		case STATE::JOIN:
-			//Šeƒ[ƒhƒXƒŒƒbƒh‚ÌI—¹‘Ò‚¿
+			//å„ãƒ­ãƒ¼ãƒ‰ã‚¹ãƒ¬ãƒƒãƒ‰ã®çµ‚äº†å¾…ã¡
 			for (auto it = loadThreads.begin(); it != loadThreads.end(); it++) {
 				it->join();
 			}
-			//ƒAƒCƒhƒ‹‚ÖˆÚs
+			//ã‚¢ã‚¤ãƒ‰ãƒ«ã¸ç§»è¡Œ
 			state_ = STATE::IDLE;
 		case STATE::FINISH:
 			break;
