@@ -77,7 +77,7 @@ void AsyncLoadRequestManager::ThreadFunc(std::queue<RequestInfo>* requests) {
 			}
 			{
 				//余り分をキューに追加
-				int targetQueue = 0;
+				unsigned int targetQueue = 0;
 				for (int i = 0; i < mod; i++) {
 					auto r = requests->front();
 					requestQueue[targetQueue].push(r);

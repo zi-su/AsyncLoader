@@ -30,14 +30,15 @@ public:
 		BALANCER,
 	};
 
-	AsyncLoadRequestManager();
-	~AsyncLoadRequestManager();
-
 	void ThreadStart();
 	static void ThreadFunc(std::queue<RequestInfo>* requests);
 
 	void PushRequest(RequestInfo& fileName);
 	
+	static AsyncLoadRequestManager* getInstance() {
+		static AsyncLoadRequestManager instance;
+		return &instance;
+	}
 
 	bool IsLoading()const;
 	STATE GetState()const { return state_; }
@@ -45,6 +46,11 @@ public:
 	void Cancel() { cancel_ = true; };
 	void Finish();
 private:
+	AsyncLoadRequestManager();
+	~AsyncLoadRequestManager();
+	AsyncLoadRequestManager(const AsyncLoadRequestManager&) {};
+	AsyncLoadRequestManager& operator=(const AsyncLoadRequestManager& l) {};
+
 	std::mutex async_mutex;
 	static std::atomic<STATE> state_;
 	static std::atomic<bool> cancel_;
